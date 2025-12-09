@@ -1,0 +1,21 @@
+# Сборка CMake
+build/
+cmake-build-*/
+
+# Объектные файлы
+*.o
+*.obj
+
+# Исполняемые файлы
+*.exe
+*.out
+
+# IDE файлы
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Системные файлы
+.DS_Store
+Thumbs.db
