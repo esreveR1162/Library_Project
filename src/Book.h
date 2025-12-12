@@ -9,7 +9,7 @@ private:
     std::string author;
     int year;
     std::string isbn;
-    bool available;
+    bool isAvailable;
     std::string borrowedBy;
 
 public:
@@ -19,13 +19,13 @@ public:
     std::string getTitle() const;
     std::string getAuthor() const;
     int getYear() const;
-    std::string getIsbn() const;
-    bool isAvailable() const;
+    std::string getISBN() const;
+    bool getIsAvailable() const;
     std::string getBorrowedBy() const;
     
-    void borrow(const std::string& userName);
+    void borrowBook(const std::string& userName);
     void returnBook();
-    void display() const;
+    void displayInfo() const;
 };
 
 #endif
