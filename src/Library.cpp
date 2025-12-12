@@ -5,11 +5,17 @@
 #include <stdexcept>
 
 Library::Library(const std::string& filePath) : dataFile(filePath) {
-    std::cout << "Библиотека создана" << std::endl;
+    std::cout << "\n === ИНИЦИАЛИЗАЦИЯ БИБЛИОТЕКИ ===" << std::endl;
+    std::cout << "Файл данных: " << dataFile << std::endl;
+    
     try {
         loadFromFile();
-    } catch (...) {
+        std::cout << "Данные успешно загружены!" << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << "Ошибка: " << e.what() << std::endl;
+        std::cout << "Создана новая пустая библиотека" << std::endl;
     }
+    std::cout << "=============================\n" << std::endl;
 }
 
 void Library::addBook(const Book& book) {
@@ -148,22 +154,82 @@ void Library::saveToFile() const {
 void Library::loadFromFile() {
     std::ifstream file(dataFile);
     if (!file) {
-        throw std::runtime_error("Файл не найден");
+        throw std::runtime_error("Файл не найден: " + dataFile);
     }
+    
+    std::cout << "📂 Загрузка данных из файла..." << std::endl;
     
     std::string line;
     bool readingBooks = true;
+    int booksLoaded = 0;
+    int usersLoaded = 0;
+    
+  
+    std::string currentTitle, currentAuthor, currentISBN, currentBorrowedBy, currentAvailable;
+    int currentYear = 0;
+    bool parsingBook = false;
     
     while (getline(file, line)) {
-        if (line.empty()) continue;
+ 
+        if (line.empty()) {
+ 
+            if (parsingBook && !currentTitle.empty()) {
+                try {
+                    Book book(currentTitle, currentAuthor, currentYear, currentISBN);
+                    if (currentAvailable == "no") {
+                        book.borrowBook(currentBorrowedBy);
+                    }
+                    books.push_back(book);
+                    booksLoaded++;
+                } catch (const std::exception& e) {
+                    std::cout << "Ошибка при загрузке книги: " << e.what() << std::endl;
+                }
+                
+
+                currentTitle = currentAuthor = currentISBN = currentBorrowedBy = currentAvailable = "";
+                currentYear = 0;
+                parsingBook = false;
+            }
+            continue;
+        }
         
+   
         if (line == "---USERS---") {
             readingBooks = false;
             continue;
         }
         
-        // Простая загрузка (можно доработать)
+        if (readingBooks) {
+
+            if (line == "BOOK") {
+                parsingBook = true;
+                continue;
+            }
+            
+            if (parsingBook) {
+                if (line.find("Title: ") == 0) {
+                    currentTitle = line.substr(7);
+                } else if (line.find("Author: ") == 0) {
+                    currentAuthor = line.substr(8);
+                } else if (line.find("Year: ") == 0) {
+                    currentYear = std::stoi(line.substr(6));
+                } else if (line.find("ISBN: ") == 0) {
+                    currentISBN = line.substr(6);
+                } else if (line.find("Available: ") == 0) {
+                    currentAvailable = line.substr(11);
+                } else if (line.find("BorrowedBy: ") == 0) {
+                    currentBorrowedBy = line.substr(12);
+                }
+            }
+        } else {
+   
+            if (line == "USER") {
+                usersLoaded++;
+            }
+        }
     }
     
     file.close();
+    std::cout << "Загружено книг: " << booksLoaded << std::endl;
+    std::cout << "Загружено пользователей: " << usersLoaded << std::endl;
 }

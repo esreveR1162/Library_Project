@@ -3,11 +3,6 @@
 #include <limits>
 #include "Library.h"
 
-void clearInput() {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}
-
 void showMenu() {
     std::cout << "\n=== БИБЛИОТЕКА ===" << std::endl;
     std::cout << "1. Все книги" << std::endl;
@@ -26,13 +21,13 @@ void showMenu() {
 int main() {
     Library lib;
     
-    bool running = true;
-    while (running) {
+    int option = 0;
+    
+    do {
         showMenu();
-        
-        int option;
         std::cin >> option;
-        clearInput();
+        
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         
         try {
             switch (option) {
@@ -44,50 +39,50 @@ int main() {
                     lib.displayAllUsers();
                     break;
                     
-                case 3: {
+                case 3: { 
                     std::string title, author, isbn;
                     int year;
                     
                     std::cout << "Название: ";
-                    getline(std::cin, title);
+                    std::getline(std::cin, title);
                     
                     std::cout << "Автор: ";
-                    getline(std::cin, author);
+                    std::getline(std::cin, author);
                     
                     std::cout << "Год: ";
                     std::cin >> year;
-                    clearInput();
+                    std::cin.ignore();
                     
                     std::cout << "ISBN: ";
-                    getline(std::cin, isbn);
+                    std::getline(std::cin, isbn);
                     
                     Book newBook(title, author, year, isbn);
                     lib.addBook(newBook);
                     break;
                 }
                     
-                case 4: {
+                case 4: { 
                     std::string name, id;
                     
                     std::cout << "Фамилия: ";
-                    getline(std::cin, name);
+                    std::getline(std::cin, name);
                     
                     std::cout << "ID: ";
-                    getline(std::cin, id);
+                    std::getline(std::cin, id);
                     
                     User newUser(name, id);
                     lib.addUser(newUser);
                     break;
                 }
                     
-                case 5: {
+                case 5: { 
                     std::string name, isbn;
                     
                     std::cout << "Фамилия: ";
-                    getline(std::cin, name);
+                    std::getline(std::cin, name);
                     
                     std::cout << "ISBN: ";
-                    getline(std::cin, isbn);
+                    std::getline(std::cin, isbn);
                     
                     lib.borrowBook(name, isbn);
                     break;
@@ -97,17 +92,17 @@ int main() {
                     std::string isbn;
                     
                     std::cout << "ISBN: ";
-                    getline(std::cin, isbn);
+                    std::getline(std::cin, isbn);
                     
                     lib.returnBook(isbn);
                     break;
                 }
                     
-                case 7: {
+                case 7: { 
                     std::string isbn;
                     
                     std::cout << "ISBN: ";
-                    getline(std::cin, isbn);
+                    std::getline(std::cin, isbn);
                     
                     Book* found = lib.findBookByISBN(isbn);
                     if (found) {
@@ -118,11 +113,11 @@ int main() {
                     break;
                 }
                     
-                case 8: {
+                case 8: {  
                     std::string name;
                     
                     std::cout << "Фамилия: ";
-                    getline(std::cin, name);
+                    std::getline(std::cin, name);
                     
                     User* found = lib.findUserByName(name);
                     if (found) {
@@ -138,7 +133,6 @@ int main() {
                     break;
                     
                 case 10:
-                    running = false;
                     std::cout << "Выход" << std::endl;
                     break;
                     
@@ -148,7 +142,8 @@ int main() {
         } catch (const std::exception& e) {
             std::cout << "Ошибка: " << e.what() << std::endl;
         }
-    }
+        
+    } while (option != 10);
     
     return 0;
 }
